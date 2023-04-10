@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+    <style>
+        #maCarte {
+            height: 680px;
+            width: auto;
+        }
+
+        .entrepot {
+            background: yellow;
+            border: 2px solid red
+        }
+
+        .grp1 {
+            background: rgb(255, 191, 0);
+            border: 2px solid white
+        }
+
+        .grp2 {
+            background: rgb(255, 64, 0);
+            border: 2px solid white
+        }
+
+        .grp3 {
+            background: rgb(0, 200, 0);
+            border: 2px solid white
+        }
+
+        .grp4 {
+            background: rgb(0, 128, 255);
+            border: 2px solid white
+        }
+
+        .grp5 {
+            background: rgb(255, 128, 0);
+            border: 2px solid white
+        }
+    </style>
+
+    <title>ALDI - Pin LIDL</title>
+</head>
+
+<body>
+    <!-- NavBar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#"><img src="img/logo.svg" alt="sql" width="15%" class="mx-2" /> ALDI - Pin
+            concurrents</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link"
+                    href="https://www.data.gouv.fr/fr/datasets/communes-de-france-base-des-codes-postaux/">Site
+                    DataGouv</a>
+                <a class="nav-item nav-link"
+                    href="https://www.data.gouv.fr/fr/datasets/r/dbe8a621-a9c4-4bc3-9cae-be1699c5ff25">Télécharger le
+                    fichier source CSV</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="text-center">
+            <h1 class="mt-2 p-3 bg-primary border border-primary rounded text-white">Les entrepôts et les magasins LIDL
+            </h1>
+            <p>Sélection de magasins concurrents pour les relevés de prix, afin d’assurer une bonne couverture des
+                régions des concurrents.</p>
+        </div>
+        <div class="row">
+            <!-- Pin et légende -->
+            <div class="col-2">
+                <table class="table table-primary table-striped table-bordered border-primary">
+                    <thead>
+                        <tr>
+                            <th scope="col">Pin</th>
+                            <th scope="col">Légende</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td scope="row"><img src="img/lidl.png" alt="" width="45" height="45"></td>
+                            <td>Entrepot</td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><img src="img/Grp1.png" alt="" width="45" height="45"></td>
+                            <td>Groupe 1</td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><img src="img/Grp2.png" alt="" width="45" height="45"></td>
+                            <td>Groupe 2</td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><img src="img/Grp3.png" alt="" width="45" height="45"></td>
+                            <td>Groupe 3</td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><img src="img/Grp4.png" alt="" width="45" height="45"></td>
+                            <td>Groupe 4</td>
+                        </tr>
+                        <tr>
+                            <td scope="row"><img src="img/Grp5.png" alt="" width="45" height="45"></td>
+                            <td>Groupe 5</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Carte -->
+            <div class="col-10 border border-primary bg-primary">
+                <div id="maCarte"></div>
+            </div>
+            <!-- Menu tab -->
+            <div class="text-center">
+                <div class="tab">
+                    <div class="btn-group m-2" role="group" aria-label="Basic example">
+                        <button type="button" class="tablinks btn btn-sm btn-outline-dark"
+                            onclick="openCity(event, 'Lesentrepots')"><img src="img/lidl.png" width="45" height="45" alt=""></button>
+                        <button type="button" class="tablinks btn btn-sm btn-outline-warning"
+                            onclick="openCity(event, 'Groupen1')"><img src="img/Grp1.png" width="45" height="45" alt=""></button>
+                        <button type="button" class="tablinks btn btn-sm btn-outline-danger"
+                            onclick="openCity(event, 'Groupen2')"><img src="img/Grp2.png" width="45" height="45" alt=""></button>
+                        <button type="button" class="tablinks btn btn-sm btn-outline-success"
+                            onclick="openCity(event, 'Groupen3')"><img src="img/Grp3.png" width="45" height="45" alt=""></button>
+                        <button type="button" class="tablinks btn btn-sm btn-outline-primary"
+                            onclick="openCity(event, 'Groupen4')"><img src="img/Grp4.png" width="45" height="45" alt=""></button>
+                        <button type="button" class="tablinks btn btn-sm btn-outline-warning"
+                            onclick="openCity(event, 'Groupen5')"><img src="img/Grp5.png" width="45" height="45" alt=""></button>
+                    </div>
+                </div>
+            </div>
+            <!-- Les données -->
+            <div id="Lesentrepots" class="tabcontent">
+                <table class="table table-responsive-lg table-striped border border-dark m-3">
+                    <thead>
+                        <tr class="table-dark">
+                            <th scope="col">Ville</th>
+                            <th scope="col">Lat.</th>
+                            <th scope="col">Lon.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lesEntrepots"></tbody>
+                </table>
+            </div>
+            <div id="Groupen1" class="tabcontent">
+                <table class="table table-responsive-lg table-striped border border-warning m-3">
+                    <thead>
+                        <tr class="table-warning">
+                            <th scope="col">Ville</th>
+                            <th scope="col">Lat.</th>
+                            <th scope="col">Lon.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lesVillesLidlGrp1"></tbody>
+                </table>
+            </div>
+            <div id="Groupen2" class="tabcontent">
+                <table class="table table-responsive-lg table-striped border border-danger m-3">
+                    <thead>
+                        <tr class="table-danger">
+                            <th scope="col">Ville</th>
+                            <th scope="col">Lat.</th>
+                            <th scope="col">Lon.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lesVillesLidlGrp2"></tbody>
+                </table>
+            </div>
+            <div id="Groupen3" class="tabcontent">
+                <table class="table table-responsive-lg table-striped border border-success m-3">
+                    <thead>
+                        <tr class="table-success">
+                            <th scope="col">Ville</th>
+                            <th scope="col">Lat.</th>
+                            <th scope="col">Lon.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lesVillesLidlGrp3"></tbody>
+                </table>
+            </div>
+            <div id="Groupen4" class="tabcontent">
+                <table class="table table-responsive-lg table-striped border border-primary m-3">
+                    <thead>
+                        <tr class="table-primary"></tr>
+                        <th scope="col">Ville</th>
+                        <th scope="col">Lat.</th>
+                        <th scope="col">Lon.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lesVillesLidlGrp4"></tbody>
+                </table>
+            </div>
+            <div id="Groupen5" class="tabcontent">
+                <table class="table table-responsive-lg table-striped border border-warning m-3">
+                    <thead>
+                        <tr class="table-warning"></tr>
+                        <th scope="col">Ville</th>
+                        <th scope="col">Lat.</th>
+                        <th scope="col">Lon.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lesVillesLidlGrp5"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div style="height: 200px"></div>
+    <div class="footer bg-light opacity-75">
+        <p>© 2023 Copyright<a href="https://github.com/Lud972vic"><img src="img/github.png" alt="github"></a></p>
+    </div>
+
+    <!-- Fichiers Javascript -->
+    <script>
+        function openCity(evt, cityName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin="">
+        </script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/jquery-3.2.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>
